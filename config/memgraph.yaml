@@ -1,0 +1,12 @@
+graphdb:
+  module: memgraph
+  class: Memgraph
+  args:
+    host: localhost
+    port: 7687
+
+graph_cache:
+  ttl: 86400
+
+nvd:
+  sync_frequency: 3600

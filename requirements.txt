@@ -1,0 +1,11 @@
+pip==21.3.1
+requests==2.26.0
+GitPython==3.1.24
+toml==0.10.2
+flask==2.0.2
+lxml==4.7.1
+pyhash==0.9.3
+pyyaml==6.0
+
+# memgraph support
+pymgclient==1.1.0

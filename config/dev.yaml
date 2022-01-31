@@ -1,0 +1,9 @@
+graphdb:
+  module: in_memory
+  class: InMemoryGraph
+
+graph_cache:
+  ttl: 300
+
+nvd:
+  sync_frequency: 3600
