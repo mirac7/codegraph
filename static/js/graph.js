@@ -122,7 +122,7 @@ const buildGraph = (report, pruned) => {
     renderGraph(graphNodes, graphEdges);
 }
 
-const focusOnVertex = name => network.focus(name, {animation: {duration: 200}, scale: 1});
+const focusOnVertex = name => network.focus(name, {animation: {duration: 200}, scale: 0.9});
 
 const populateGraphSummary = (vertices, edges, meta, pruned) => {
     let html = `<h1>Graph for <a href="${escape(query)}" target="_blank">${escape(query)}</a></h1>`;
