@@ -1,10 +1,10 @@
 # CodeGraph
 
-Validation of GitHub projects exposure to CVE vulnerabilities and visualize dependecies with graph UI.
+Validation of GitHub projects exposure to common vulnerabilities and exploits (CVEs) and dependecy visualization with graph UI.
 
 Users can select GitHub repository and check vulnerability status for libraries, visually with attractive graph representation.
 
-**Link to web application** ->  https://secure.codegraph.space/
+**Link to live demo** ->  https://secure.codegraph.space/
 
 ## GitHub data
 - Repository URL
@@ -16,6 +16,7 @@ Users can select GitHub repository and check vulnerability status for libraries,
 - Description
 - CVSS v2 and v3 Base Score
 - Known Affected Software Configuration (CPE)
+- Publish date
 
 ## MemGraph Database
 
@@ -40,22 +41,19 @@ CREATE INDEX ON :Code(name);
 ---
 
 <p align="center">
-  <img src="images/data-model.png" width="900" title="Data Model">
+  <img src="images/data-model.png" width="900" title="Data Model" alt="Data Model">
 </p>
 
 ---
 
-```sql
-# Example data in Cypher sintax
+```cypher
+// Example data in Cypher syntax
 
-# Cve Nodes
+// Cve Nodes
 
-MERGE (cve:Cve { name: "CVE-2021-28377" }) ON CREATE SET cve.description="ChronoForums 2.0.11 allows av Directory Traversal to read arbitrary files.", cve.cvss_v2_score="5.0", cve.cvss_v3_s
-core="5.3", cve.publish_date="2022-01-12";
-MERGE (cve:Cve { name: "CVE-2022-0159" }) ON CREATE SET cve.description="orchardcore is vulnerable to Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')", 
-cve.cvss_v2_score="3.5", cve.cvss_v3_score="5.4", cve.publish_date="2022-01-12";
-MERGE (cve:Cve { name: "CVE-2022-20614" }) ON CREATE SET cve.description="A missing permission check in Jenkins Mailer Plugin 391.ve4a_38c1b_cf4b_ and earlier allows attackers with Overall/
-Read access to use the DNS used by the Jenkins instance to resolve an attacker-specified hostname.", cve.cvss_v2_score="4.0", cve.cvss_v3_score="4.3", cve.publish_date="2022-01-12";
+MERGE (cve:Cve { name: "CVE-2021-28377" }) ON CREATE SET cve.description="ChronoForums 2.0.11 allows av Directory Traversal to read arbitrary files.", cve.cvss_v2_score="5.0", cve.cvss_v3_score="5.3", cve.publish_date="2022-01-12";
+MERGE (cve:Cve { name: "CVE-2022-0159" }) ON CREATE SET cve.description="orchardcore is vulnerable to Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')", cve.cvss_v2_score="3.5", cve.cvss_v3_score="5.4", cve.publish_date="2022-01-12";
+MERGE (cve:Cve { name: "CVE-2022-20614" }) ON CREATE SET cve.description="A missing permission check in Jenkins Mailer Plugin 391.ve4a_38c1b_cf4b_ and earlier allows attackers with Overall/Read access to use the DNS used by the Jenkins instance to resolve an attacker-specified hostname.", cve.cvss_v2_score="4.0", cve.cvss_v3_score="4.3", cve.publish_date="2022-01-12";
 MERGE (cve:Cve { name: "CVE-2021-4104" }) ON CREATE SET cve.description="JMSAppender in Log4j 1.2 is vulnerable to deserialization of untrusted data when the attacker has write access to the Log4j configuration. The attacker can provide TopicBindingName and TopicConnectionFactoryBindingName configurations causing JMSAppender to perform JNDI requests that result in remote code execution in a similar fashion to CVE-2021-44228. Note this issue only affects Log4j 1.2 when specifically configured to use JMSAppender, which is not the default. Apache Log4j 1.2 reached end of life in August 2015. Users should upgrade to Log4j 2 as it addresses numerous other issues from the previous versions.", cve.cvss_v2_score="6.0", cve.cvss_v3_score="7.5", cve.publish_date="2021-12-14";
 MERGE (cve:Cve { name: "CVE-2020-9493" }) ON CREATE SET cve.description="A deserialization flaw was found in Apache Chainsaw versions prior to 2.1.0 which could lead to malicious code execution.", cve.cvss_v2_score="6.8", cve.cvss_v3_score="9.8", cve.publish_date="2021-06-16";
 MERGE (cve:Cve { name: "CVE-2022-0087" }) ON CREATE SET cve.description="keystone is vulnerable to Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')", cve.cvss_v2_score="4.3", cve.cvss_v3_score="6.1", cve.publish_date="2022-01-12";
@@ -66,7 +64,7 @@ MERGE (cve:Cve { name: "CVE-2021-30330" }) ON CREATE SET cve.description="Possib
 MERGE (cve:Cve { name: "CVE-2022-21865" }) ON CREATE SET cve.description="Connected Devices Platform Service Elevation of Privilege Vulnerability.", cve.cvss_v2_score="4.4", cve.cvss_v3_score="7.0", cve.publish_date="2022-01-11";
 
 
-# Code Nodes and CPE Edges
+// Code Nodes and CPE Edges
 
 MERGE (code:Code:Repo { name: "easy_forms_for_mailchimp" });
 MATCH (cve:Cve {name: "CVE-2021-24985" }),(code:Code { name: "easy_forms_for_mailchimp" }) MERGE (cve)-[:CPE { version_code: "<:6.8.6" }]->(code);
