@@ -40,7 +40,7 @@ CREATE INDEX ON :Code(name);
 ---
 
 <p align="center">
-  <img src="images/data-model.png" width="600" title="Data Model">
+  <img src="images/data-model.png" width="900" title="Data Model">
 </p>
 
 ---
