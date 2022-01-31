@@ -140,10 +140,10 @@ function populateGraphSummary(vertices, edges, meta, pruned) {
     </p>`;
 
     if (pruned) html += `<p class='meta'>
-        This graph has been pruned of dependencies with no found vulnerabilities. <a href="?query=${encodeURIComponent(query)}&skip_prune=1">Click here</a> to display entire graph <a href="?query=${encodeURIComponent(query)}">check another repository</a> for common vulnerabilities or exploits.
+        This graph has been pruned of dependencies with no found vulnerabilities. <a href="?query=${encodeURIComponent(query)}&skip_prune=1">Click here</a> to display entire graph <a href="/">check another repository</a> for common vulnerabilities or exploits.
     </p>`;
     else html += `<p class='meta'>
-        <a href="?query=${encodeURIComponent(query)}">Click here</a> to prune dependencies with no found vulnerabilities or <a href="?query=${encodeURIComponent(query)}">check another repository</a> for common vulnerabilities or exploits.
+        <a href="?query=${encodeURIComponent(query)}">Click here</a> to prune dependencies with no found vulnerabilities or <a href="/">check another repository</a> for common vulnerabilities or exploits.
     </p>`;
 
     document.getElementById("summary").innerHTML = html;
