@@ -37,31 +37,36 @@ const lowCVEStyle = {
         bold: {color: "#fe2", size: 18}, italic: {color: '#fff8'}
     },
 }
+let network;
 
-function escape(text) {
+
+const escape = text => {
     return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
-function renderGraph(nodes, edges) {
-    const network = new vis.Network(document.getElementById('graph'), {nodes, edges}, {
+const renderGraph = (nodes, edges) => {
+    network = new vis.Network(document.getElementById('graph'), {nodes, edges}, {
         edges: {arrows: "middle"},
-        physics: {solver: "repulsion", repulsion: {springLength: 200, nodeDistance: 600, damping: 0.09},},
+        physics: {solver: "repulsion", repulsion: {springLength: 200, nodeDistance: 600, damping: 0.09}},
     });
-    network.on('doubleClick', function(properties) {
+    network.on('stabilizationIterationsDone', () => {
+        document.getElementById("loading").classList.add("hidden");
+    });
+    network.on('doubleClick', (properties) => {
         if (properties.nodes && properties.nodes.length) {
-            console.log(properties.nodes[0]);
+            window.open(`https://nvd.nist.gov/vuln/detail/${properties.nodes[0]}`, "_blank");
         }
     });
 }
 
-async function fetchGraph(url, pruned) {
+const fetchGraph = async (url, pruned) => {
     const response = await fetch(`/get_repo_insights?query=${encodeURIComponent(url)}`);
     const {found, report} = await response.json()
     if (found) buildGraph(report, pruned);
     else window.location.href = `/?query=${encodeURIComponent(url)}`;
 }
 
-function buildGraph(report, pruned=false) {
+const buildGraph = (report, pruned) => {
     let {vertices, edges, meta} = report;
 
     if (pruned) {
@@ -89,7 +94,7 @@ function buildGraph(report, pruned=false) {
             nodeStyle = defaultNodeStyle;
         } else {
             const {description, cvss_v2_score, cvss_v3_score, publish_date} = vertex;
-            text += `<i>${description}</i>\n\nCVSS v2 score: ${cvss_v2_score}\nCVSS v3 score: ${cvss_v3_score}\nPublished: ${publish_date}\n`;
+            text += `<i>${description}</i>\n\nCVSS v2 score: ${cvss_v2_score}\nCVSS v3 score: ${cvss_v3_score}\nPublished: ${publish_date}\n\n<i>Double click for more info...</i>\n`;
 
             let severity = Number(cvss_v3_score);
             if (isNaN(severity)) severity = Number(cvss_v2_score);
@@ -116,8 +121,11 @@ function buildGraph(report, pruned=false) {
     populateGraphSummary(vertices, edges, meta, pruned);
     renderGraph(graphNodes, graphEdges);
 }
-function populateGraphSummary(vertices, edges, meta, pruned) {
-    let html = `<h1>Graph for ${escape(query)}</h1>`;
+
+const focusOnVertex = name => network.focus(name, {animation: {duration: 200}, scale: 1});
+
+const populateGraphSummary = (vertices, edges, meta, pruned) => {
+    let html = `<h1>Graph for <a href="${escape(query)}" target="_blank">${escape(query)}</a></h1>`;
 
     const all_vulnerabilities = new Set();
     for (const {name, type} of vertices) {
@@ -125,10 +133,8 @@ function populateGraphSummary(vertices, edges, meta, pruned) {
         all_vulnerabilities.add(name);
     }
     if (all_vulnerabilities.size) {
-        html += `<p class='vulnerabilities'> Found ${all_vulnerabilities.size} vulnerabilities: `;
-        html += [...all_vulnerabilities].map(
-            cve => `<a href="https://nvd.nist.gov/vuln/detail/${cve}" target="_blank">${cve}</a>`
-        ).join(", ");
+        html += `<p class='vulnerabilities'> Found ${all_vulnerabilities.size} vulnerabilities:<br>`;
+        html += [...all_vulnerabilities].map(cve => `<span onclick="focusOnVertex('${cve}')">${cve}</span>`).join(", ");
 
         html += "</p>"
     } else html += "<p class='no-vulnerabilities'>No vulnerabilities found!</p>";
@@ -146,7 +152,9 @@ function populateGraphSummary(vertices, edges, meta, pruned) {
         <a href="?query=${encodeURIComponent(query)}">Click here</a> to prune dependencies with no found vulnerabilities or <a href="/">check another repository</a> for common vulnerabilities or exploits.
     </p>`;
 
-    document.getElementById("summary").innerHTML = html;
+    const summary = document.getElementById("summary")
+    summary.innerHTML = html;
+    summary.classList.add("shown");
 }
 
 const searchParams = new URL(window.location).searchParams
